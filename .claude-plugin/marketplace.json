@@ -1,0 +1,31 @@
+{
+  "name": "cook-lab",
+  "owner": {
+    "name": "Cook Lab",
+    "email": "dpcook@ohri.ca"
+  },
+  "description": "Claude Code skills for the Cook Lab (OHRI) — project management and electronic lab notebook in the lab's Notion Teamspace.",
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "cook-lab-notion",
+      "source": "cook-lab-notion",
+      "description": "Manage projects, tasks, and the electronic lab notebook in the Cook Lab Notion Teamspace. Bundles the Notion connection. You do the science; Claude writes the notebook.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "cook-lab-research",
+      "source": "cook-lab-research",
+      "description": "Research productivity toolkit: rigorous literature reviews, and scaffolding new analysis/grant projects with lab conventions (literature-review, project-spec, project-init).",
+      "version": "0.1.0"
+    },
+    {
+      "name": "cook-lab-analysis",
+      "source": "cook-lab-analysis",
+      "description": "Single-cell & spatial analysis toolkit: scRNA-seq/spatial methods, lab figure style, and analysis conventions + environment setup (scrna-spatial, visualization, analysis-conventions). Opt-in; prescribes the lab analysis environment.",
+      "version": "0.1.0"
+    }
+  ]
+}

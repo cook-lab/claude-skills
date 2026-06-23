@@ -1,0 +1,37 @@
+# Cook Lab — starter conda/mamba environment for single-cell & spatial (Python side).
+# This is a STARTING POINT, not a frozen spec. Each project should pin its own environment.yml
+# (and a renv.lock for the R side) to match its Methods.
+# Create with:  mamba env create -f environment.example.yml   (then: mamba activate scverse)
+name: scverse
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - pip
+  # --- core scientific stack ---
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - pyarrow            # parquet caches
+  - pyyaml             # config loaders
+  # --- single-cell ---
+  - scanpy
+  - anndata
+  - leidenalg          # Leiden clustering
+  - python-igraph
+  - umap-learn
+  - scikit-learn
+  - scikit-misc        # scanpy HVG seurat_v3 flavor
+  - statsmodels
+  - pip:
+      - scrublet         # doublet detection
+      - scvi-tools       # scVI/scANVI integration (GPU recommended for re-running)
+      - decoupler        # PROGENy / Hallmark / DoRothEA functional inference
+      - liana            # cell-cell communication
+# --- R side (managed per-project with renv against the system R install) ---
+# Seurat, SpatialFeatureExperiment, Voyager, SingleR, UCell, ComplexHeatmap, scico, etc.
+# Initialize with renv::init() in the project, then renv::snapshot() to pin. See the analysis
+# conventions for the full standard.

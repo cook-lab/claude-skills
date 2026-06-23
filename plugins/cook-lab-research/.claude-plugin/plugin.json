@@ -1,0 +1,12 @@
+{
+  "name": "cook-lab-research",
+  "description": "Research productivity toolkit for the Cook Lab: rigorous literature reviews, and scaffolding new analysis/grant projects (CLAUDE.md, PROJECT_SPEC.md) with lab conventions. Skills: literature-review, project-spec, project-init.",
+  "version": "0.1.0",
+  "author": {
+    "name": "David Cook",
+    "email": "dpcook@ohri.ca"
+  },
+  "homepage": "https://github.com/cook-lab/claude-skills",
+  "repository": "https://github.com/cook-lab/claude-skills",
+  "license": "MIT"
+}

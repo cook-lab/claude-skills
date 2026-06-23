@@ -1,0 +1,12 @@
+{
+  "name": "cook-lab-analysis",
+  "description": "Cook Lab single-cell & spatial analysis toolkit: scRNA-seq/spatial methods (QC, clustering, annotation, integration, cross-modality transfer), lab figure style, and the lab analysis conventions + environment setup + project scaffolding. Skills: scrna-spatial, visualization, analysis-conventions. Opt-in; prescribes the lab analysis environment.",
+  "version": "0.1.0",
+  "author": {
+    "name": "David Cook",
+    "email": "dpcook@ohri.ca"
+  },
+  "homepage": "https://github.com/cook-lab/claude-skills",
+  "repository": "https://github.com/cook-lab/claude-skills",
+  "license": "MIT"
+}
