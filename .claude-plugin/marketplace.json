@@ -13,7 +13,7 @@
       "name": "cook-lab-notion",
       "source": "cook-lab-notion",
       "description": "Manage projects, tasks, and the electronic lab notebook in the Cook Lab Notion Teamspace. Bundles the Notion connection. You do the science; Claude writes the notebook.",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "cook-lab-research",

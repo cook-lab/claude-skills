@@ -1,7 +1,7 @@
 {
   "name": "cook-lab-notion",
   "description": "Cook Lab project management + electronic lab notebook in Notion. Skills: lab-notebook (everyone) and lab-pm (PI/oversight). Bundles the Notion MCP server.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": {
     "name": "David Cook",
     "email": "dpcook@ohri.ca"

@@ -5,7 +5,8 @@ description: >
   electronic lab notebook (experiment log). Use when a labmate wants to see what
   to work on, create or update a task, log an experiment / journal an analysis or
   bench result, summarize and close a task, or check project status. Triggers:
-  "log this", "log my experiment", "notebook entry", "ELN", "what should I work
+  "log this", "log an experiment", "log my work", "log what I did today", "log my experiment",
+  "notebook entry", "ELN", "what should I work
   on", "my tasks", "update my task", "create a task", "Notion", "lab teamspace",
   "project status", "close out this task". The system of record is Notion — write
   results there, not just locally.
@@ -133,20 +134,40 @@ is really several deliverables, propose splitting; if it's a single session, sug
 an *experiment* under an existing task instead.
 
 ### 3. Log an experiment ⭐ (the core feature)
-This is the highest-value action. When the labmate finishes (or is mid-) an analysis step or bench
-experiment and says "log this":
-1. **Find the parent task.** Infer from the conversation / working directory (e.g. an
-   `~/Analysis/{project}/` dir, a script path, a project CLAUDE.md). If ambiguous, ask once; if no
-   suitable task exists, offer to create one.
-2. **Create the experiment page** in the Experiments DB:
-   - Title: `YYYYMMDD - Short description` (today's date, or the date the work was done).
-   - `Person` = the labmate; `Date Created` = that `YYYYMMDD`; `Tasks` = the parent task.
-3. **Write the body** for them (see style guide). Pull real content from the session — code that
-   was run, parameters, file paths, result tables, what was decided and why. Embed code blocks and
-   tables; reference figure/output files by path and note when a screenshot should be attached.
-4. Confirm with a link and offer to bump the task status if the work advanced it.
+The highest-value action. **First decide which mode you're in — never reply "log what?"**; work out
+whether you already have the content or need to ask for it.
 
-See `references/logging-walkthrough.md` for a complete worked example.
+**Mode A — the work happened in this session** (an analysis you just ran, code in this
+conversation): draft the entry straight from that context (code, parameters, paths, results,
+decisions) and just confirm. Don't re-interview the user for things you already have.
+
+**Mode B — the user did the work away from Claude** (bench work, a manual analysis, a past session):
+you have no context, so run a short **conversational intake** — ask only for what you can't infer,
+batched into one friendly round, adapted to the kind of work. Don't make it feel like a form:
+- **What did you do?** (1–2 sentences → becomes the title/objective)
+- **When?** (default today; accept a past date — people backdate)
+- **Which project/task?** (infer if you can; offer to create a task if none fits)
+- **The 2–3 details that matter for *this kind* of work** — bench: samples/cell lines, conditions or
+  treatments, key reagents, readout; computational: inputs, tool + key params, outputs. Skip the rest.
+- **What did you find / the takeaway?**
+- **Any decisions, and why?** (the highest-value part — don't skip it)
+- **Where are the data/plots/files?** Capture paths if they have them; **if not, leave a clear
+  placeholder** and move on (e.g. `📎 [attach gel image]`, `[plots — path TBD]`).
+
+Keep it light: accept "don't remember"/"N/A", ask in one round (follow up only if something's
+essential), and **create the entry now with placeholders rather than waiting for perfect info.**
+
+Then, in **both** modes:
+1. **Find/confirm the parent task** (from context or the intake; offer to create one if none fits).
+2. **Create the experiment page**: Title `YYYYMMDD - Short description`; `Person` = the labmate;
+   `Date Created` = that date; `Tasks` = the parent task.
+3. **Write the body** (see style guide), adapted to the work type — embed what you have, insert
+   placeholders for what's missing, and tell the user exactly what to paste in later (e.g. "drag the
+   gel image under Results").
+4. Confirm with the Notion link, list any placeholders left to fill, and offer to bump the task
+   status if the work advanced it.
+
+See `references/logging-walkthrough.md` for worked examples (in-session and cold intake).
 
 ### 4. Update or append to an existing entry
 The Teamspace is a **hybrid** space — people also create and edit entries by hand. When asked to add
@@ -171,10 +192,33 @@ self-check. Scope to the current user (`Person` = them):
    only from real context available in the session.
 5. Report a short before/after: what you fixed automatically, and what needs their decision.
 
-### 6. Summarize & close a task
-When a deliverable is finished: write a concise **Summary of results** on the task page (key
-findings + links to the most important experiment entries), then set `Status` = `Done`. This is
-what turns a task into a durable, citable unit later.
+### 6. Summarize & close a task ⭐
+Turning a finished string of experiments into a durable, citable conclusion is what makes a task
+worth anything later — but people rarely climb back up from their experiment logs to do it. So **do
+the synthesis for them**: the task's linked experiment entries already exist and *are* the raw
+material — read them and draft the summary, don't interrogate the user.
+
+Two ways in:
+- The user asks ("summarize this task", "wrap up / close out X").
+- **You proactively offer it** when a task looks effectively done — e.g. it has several experiment
+  entries and no Summary yet, or the user just logged what sounds like the deciding result. A light
+  nudge: *"That looks like it wraps up [task] — want me to summarize and close it?"*
+
+Process:
+1. **Read the raw material.** Fetch the task page and its linked `Experiment log` entries. Synthesize
+   from them — findings, what was concluded, what's still open.
+2. **Draft the Summary of results** on the task page: a few bullets of key findings + the bottom-line
+   conclusion, with links to the 2–3 most important experiment entries. Flag anything unresolved
+   (e.g. entries with placeholders, or open questions).
+3. **Fill gaps lightly only if needed.** If the conclusion isn't clear from the entries (or the
+   deciding result happened away from Claude), ask one or two targeted questions — don't interrogate.
+   If the entries are thin, summarize what's there and say so.
+4. **Confirm, then set status.** Show the draft; on the user's OK, write it to the task page and set
+   `Status` = `Done` (or `Abandoned`, with a one-line reason). Don't close someone else's task, or a
+   task with no real outcome, without confirming.
+
+This is also how `tidy` (workflow 5) and the `convention audit` in `lab-pm` backfill missing
+summaries on `Done` tasks — synthesize from the linked experiments, then confirm.
 
 ### 7. Project / task status
 Roll up a project's tasks by status, surface what's `In progress`/`Waiting` and what's stale.
