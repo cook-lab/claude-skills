@@ -19,7 +19,7 @@
       "name": "cook-lab-research",
       "source": "cook-lab-research",
       "description": "Research productivity toolkit: rigorous literature reviews, and scaffolding new analysis/grant projects with lab conventions (literature-review, project-spec, project-init).",
-      "version": "0.1.0"
+      "version": "0.1.1"
     },
     {
       "name": "cook-lab-analysis",

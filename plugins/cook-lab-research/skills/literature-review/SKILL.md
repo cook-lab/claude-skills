@@ -7,8 +7,9 @@ description: >
   literature", "evidence review", "what's known about", "review the research on", "find recent
   publications", "cite sources for", "research synthesis", or any request requiring comprehensive,
   citation-backed analysis of a scientific topic. Decomposes broad topics into focused questions,
-  searches in parallel via web and bioRxiv, verifies citations, and produces a structured markdown
-  report with gap analysis. ALL claims are web-search-grounded — never falls back to model-only.
+  searches in parallel via web and bioRxiv, runs OpenAlex co-citation chaining to surface missed
+  primary sources, verifies citations, and produces a structured markdown report with gap analysis.
+  ALL claims are web-search-grounded — never falls back to model-only.
 ---
 
 # Literature Review
@@ -138,7 +139,7 @@ Agents do NOT synthesize across papers. They report individual findings. Synthes
 
 ## Step 4: Refinement Round
 
-After collecting all agent reports, assess coverage before synthesizing.
+After collecting all agent reports, assess coverage before synthesizing. Use two complementary mechanisms — (A) gap/breadth-driven follow-up searches, and (B) systematic co-citation chaining via OpenAlex (see below). Both feed a single bounded refinement round.
 
 ### Review agent breadth flags and gaps
 
@@ -157,11 +158,23 @@ After collecting all agent reports, assess coverage before synthesizing.
 
 **Skip refinement if:** agent reports collectively cover the decomposition well, gaps are genuine literature gaps (not search gaps), or the topic is narrow.
 
-### Execute refinement
+### Execute refinement (gap-driven)
 
 Spawn 1-3 targeted follow-up agents with narrow, specific questions derived from the gap analysis. These agents follow the same prompt template but with focused questions.
 
-**One refinement round maximum.** Do not iterate further — diminishing returns and escalating token costs. If gaps remain after refinement, report them in the Gaps section.
+### Systematic co-citation chaining (OpenAlex)
+
+Gap/breadth analysis catches what the *agents* noticed they missed. Co-citation chaining catches what the *field* treats as foundational but every search query happened to skip — especially older primary papers and companion papers from authors you already cite. Run it every refinement round.
+
+Read [references/citation-chaining.md](references/citation-chaining.md) for the full protocol. In brief:
+
+1. **Collect** every DOI/PMID from the agent findings so far.
+2. **Chain** — run `references/cochain.py` to resolve them in OpenAlex and rank the papers they cite by co-citation degree (how many of your papers cite each candidate). No web searches; ~5 API calls.
+3. **Triage (LLM)** — from the ranked candidates, keep only genuine *primary* research relevant to a sub-question, and map each to its target section. Do **not** trust OpenAlex's `type` field for primary-vs-review — judge from title/abstract. Co-citation degree, not raw citation count, is the signal (raw counts surface famous general reviews).
+4. **Explore (mandatory)** — do **not** insert a chained paper as a bare citation. Route each surviving paper through a search agent (same `search-agent-prompt.md` rigor) to web-ground its actual findings with quantitative specifics, then verify it (Step 6). A chained paper that cannot be explored to that depth is dropped, not stubbed in.
+5. **Integrate** the explored findings into the relevant section during synthesis, exactly like any other finding.
+
+**One refinement round maximum.** Both mechanisms run once. Do not iterate further — diminishing returns and escalating token costs. If gaps remain after refinement, report them in the Gaps section.
 
 ## Step 5: Synthesize
 
@@ -273,5 +286,6 @@ After writing, present a brief summary to the user highlighting: the top finding
 ## Notes
 
 - **bioRxiv MCP constraint**: `search_preprints` only filters by category and date range — it does NOT support keyword search. Use WebSearch as the primary discovery tool. Use bioRxiv MCP for browsing recent preprints in relevant categories and for verifying/enriching bioRxiv DOIs found via WebSearch.
+- **OpenAlex** (Step 4 chaining; optional Step 6 verification): free REST API, no key, ~100k calls/day (pass `mailto=` for the polite pool). It is a metadata + citation-graph index — excellent for enumerating references/citations and resolving DOIs/PMIDs, but its text search is literal keyword matching (weaker than WebSearch's semantic matching and PubMed's MeSH expansion), so it is **not** a substitute for WebSearch as the discovery tool.
 - **Paywalled content**: WebFetch gets landing pages and abstracts, not full text. Verify based on title/abstract metadata.
 - **Follow-up**: After delivering the report, the user may request deeper coverage of a specific theme, additional verification, or expansion of the gap analysis. These can be handled as targeted follow-up searches without re-running the full workflow.

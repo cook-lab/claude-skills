@@ -75,6 +75,17 @@ Also use `search_published_preprints` to check if the preprint has a journal ver
 
 If MCP returns matching metadata → **Verified**
 
+### Method 4: OpenAlex resolution (structured, no scraping)
+
+If the Step 4 chaining script has already resolved the review's DOIs/PMIDs in OpenAlex, reuse that output. A resolved OpenAlex record confirms the paper exists and returns canonical title, authors, year, and venue, plus an `is_retracted` flag. It is a clean substitute for Method 1 when WebFetch is denied, and it never breaks paywalls (metadata only).
+
+```
+https://api.openalex.org/works/https://doi.org/<DOI>?mailto=<email>
+https://api.openalex.org/works/pmid:<PMID>?mailto=<email>
+```
+
+Check that title/authors/year match and `is_retracted` is false → **Verified**. Caveat: content-accuracy checks still require the abstract or full text — OpenAlex confirms a paper exists, not that it says what you attributed to it.
+
 ## Confidence Levels
 
 | Level | Definition | Action |
