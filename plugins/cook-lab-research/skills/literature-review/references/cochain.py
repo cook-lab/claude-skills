@@ -27,7 +27,7 @@ The JSON is the input to the triage stage (see citation-chaining.md): an LLM
 classifies each candidate primary-vs-review, scores relevance to the review's
 sub-questions, and maps survivors to a target section.
 """
-import argparse, json, re, sys, time, urllib.parse, urllib.request
+import argparse, json, os, re, sys, time, urllib.parse, urllib.request
 from collections import defaultdict
 
 API = "https://api.openalex.org/works"
@@ -148,7 +148,9 @@ def main():
     rows.sort(key=lambda r: (-r["overlap"], -r["cites"]))
     rows = rows[:args.top]
 
-    outdir = args.out or args.input.rsplit("/", 1)[0]
+    # dirname("") and dirname("bare.md") are both "" -> fall back to CWD so a
+    # bare input filename doesn't get treated as an output directory.
+    outdir = args.out or os.path.dirname(args.input) or "."
     with open(f"{outdir}/_cochain_candidates.json", "w", encoding="utf-8") as f:
         json.dump(rows, f, indent=2, ensure_ascii=False)
     with open(f"{outdir}/_cochain_candidates.md", "w", encoding="utf-8") as f:
