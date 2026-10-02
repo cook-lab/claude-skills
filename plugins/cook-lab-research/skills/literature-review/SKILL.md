@@ -1,291 +1,92 @@
 ---
 name: literature-review
 description: >
-  Rigorous, web-search-powered literature review with citation verification. Use when the user
-  wants a literature review, evidence synthesis, citation search, or research landscape analysis.
-  Triggers: "literature review", "what does the literature say", "find papers on", "search the
-  literature", "evidence review", "what's known about", "review the research on", "find recent
-  publications", "cite sources for", "research synthesis", or any request requiring comprehensive,
-  citation-backed analysis of a scientific topic. Decomposes broad topics into focused questions,
-  searches in parallel via web and bioRxiv, runs OpenAlex co-citation chaining to surface missed
-  primary sources, verifies citations, and produces a structured markdown report with gap analysis.
-  ALL claims are web-search-grounded — never falls back to model-only.
+  Rigorous, web-search-grounded literature review with citation verification. Use when the user
+  wants a literature review, evidence synthesis, citation search, or a picture of what is known
+  about a scientific topic, or asks for comprehensive, citation-backed analysis of one. Decomposes
+  the topic into focused questions, searches in parallel via web and bioRxiv, runs OpenAlex
+  co-citation chaining to find missed primary sources, verifies citations, and writes a structured
+  markdown report with gap analysis. Every claim comes from a search result, not from memory.
 ---
 
 # Literature Review
 
-Multi-agent, web-search-grounded literature review with citation verification, gap analysis, and structured markdown output.
+A multi-agent, web-search-grounded literature review: decompose the topic, search in parallel, fill gaps with one refinement round, synthesize, verify citations, analyze gaps, and write the report.
 
-## Hard Rules
+## Rules
 
-These are non-negotiable. Every violation undermines the review's value.
+These are what make the review usable as a citable source.
 
-1. **Every factual claim must originate from a WebSearch or bioRxiv MCP result.** No claim may be sourced from training data alone. If a search returns no relevant results, report that explicitly — do not fill the gap with model knowledge.
-2. **Every citation must include a verifiable identifier:** DOI, PMID, or URL. No "Author et al., Year" without a link.
-3. **Never silently fall back to model-only responses.** If WebSearch fails or returns irrelevant results, state this in the report under Gaps and Limitations.
-4. **Citation-level attribution, not summary-level.** Each claim links to its specific source. No "several studies have shown [1-5]."
-5. **Search sub-agents MUST call WebSearch at least 5 times per assigned question.** This prevents shallow single-query coverage.
-6. **Prefer primary research over review articles.** When a finding is attributed to a review, search for and cite the original primary source. Review articles are useful for orientation but should not be the primary citation for specific experimental findings.
+1. **Every factual claim comes from a WebSearch or bioRxiv result.** Knowledge from training can suggest where to look, but a claim enters the review only once a search has found it. When a search finds nothing relevant, say so in the report instead of filling the gap from memory. If WebSearch fails or returns irrelevant results, record that under Gaps and Limitations.
+2. **Every citation carries a DOI, PMID, or URL**, and each claim cites its own source. "Several studies have shown [1-5]" is not attribution.
+3. **Primary research over reviews.** When a finding comes from a review article, find and cite the original paper; cite the review for orientation only.
 
-## Workflow Overview
+## 1. Landscape scan
 
-1. Landscape scan (quick web search to inform decomposition)
-2. Decompose the topic into focused sub-questions (10-15 for broad topics)
-3. Spawn parallel search agents
-4. Collect reports, assess coverage, run refinement round if needed
-5. Synthesize thematically with full narrative depth
-6. Verify critical citations
-7. Identify gaps (dedicated phase)
-8. Write structured markdown report
+Run two or three searches for recent reviews or perspectives on the topic and look at how the field organizes itself: its major sub-areas, what recent reviews give their own sections, what is emerging. Keep it brief; it exists to inform the decomposition.
 
-## Step 1: Landscape Scan
+## 2. Decompose
 
-Before decomposing, ground the decomposition in the current state of the field rather than relying solely on model knowledge.
+A **narrow** topic (one technique, finding, or well-bounded question) gets 3-5 sub-questions (current state, methods, limitations, recent developments); proceed without asking. A **broad** topic (more than one biological system, method, or disease context) gets 10-15 sub-questions in thematic groups; show them to the user for approval before searching. For a question asked in passing ("what's known about X"), give a brief searched answer and offer the full review. When unsure whether a topic is broad, treat it as broad and show the plan.
 
-1. Run 2-3 WebSearch queries for recent comprehensive reviews or perspectives on the topic (e.g., `"{topic}" review 2024 2025"`, `"{topic}" systematic review"`)
-2. Read the titles, abstracts, and — where visible — section headings of the top 2-3 results
-3. Note how the field currently organizes itself: what are the major sub-areas? What topics get dedicated sections in recent reviews? What's emerging?
-4. Use this structure to inform the decomposition in Step 2
+Good sub-questions target one cell type, pathway, method, or system each. Bundled questions ("macrophages, NK cells, and DCs") lead agents to cover the dominant sub-topic and neglect the rest. Include, where relevant, a foundational question (landmark studies), a recent-change question (last 2-3 years), a methods question, a translational question, and at least one question that probes limitations, contradictions, or negative findings.
 
-This step should take 2-3 minutes. Do not do a deep search — just enough to see the landscape.
-
-## Step 2: Decompose
-
-This is the most critical phase. The quality of decomposition determines the depth of the entire review.
-
-### Assess scope
-
-**Broad topic** (requires user confirmation): spans >1 biological system, >1 methodology, or >1 disease context.
-
-**Narrow topic** (auto-proceed): focused on a specific technique, finding, or well-bounded question.
-
-**Very casual query** (e.g., "what's known about X" in passing): offer a brief web-searched summary first, then ask: "Would you like me to run a full literature review on this?"
-
-When in doubt, treat as broad and show the plan.
-
-### Decompose
-
-**For broad topics:**
-1. Generate **10-15 focused sub-questions** organized into thematic groups, informed by both model knowledge and the landscape scan
-2. Each sub-question should be specific enough that a single mechanism, cell type, or method is the focus — avoid bundling (e.g., "macrophages, NK cells, and DCs" is too broad; separate them)
-3. Include where relevant:
-   - A historical/foundational question: "What are the seminal findings and landmark studies?"
-   - A temporal dimension: "What has changed in the last 2-3 years?"
-   - A methodological dimension: "What approaches are being used?"
-   - A clinical/translational dimension: "What is the therapeutic or diagnostic relevance?"
-4. Present the decomposition to the user for approval. They may add, remove, or refine questions.
-
-**For narrow topics:**
-1. Auto-decompose into 3-5 sub-questions covering: current state, methods/approaches, limitations, recent developments
-2. Proceed directly to Step 3
-
-### Decomposition principles
-- **Separate, don't bundle.** Each question should target one biological system, one cell type, one pathway, or one method. Bundled questions cause agents to find the dominant sub-topic and neglect the others.
-- **Include contrarian angles.** At least one question should probe limitations, contradictions, or negative findings.
-- **Aim for specificity.** "What cytokines are dysregulated?" is too broad. "What roles do IL-1beta, IL-33, and TGF-beta play in the peritoneal cytokine milieu?" is better.
-
-### Example (broad: "immune dysfunction in endometriosis")
+An illustrative broad decomposition, for "immune dysfunction in endometriosis" (derive the groups for a new topic from its own landscape scan):
 
 ```
-1. Macrophage polarization, origin, and metabolic reprogramming in endometriosis
-2. NK cell dysfunction — receptor balance, cytokine suppression, and emerging mechanisms
+1. Macrophage polarization, origin, and metabolic reprogramming
+2. NK cell dysfunction — receptor balance, cytokine suppression
 3. Neutrophil roles and NETosis in lesion establishment
 4. Dendritic cell maturation and mast cell contributions
-5. CD4+ T cell subsets (Th1/Th2 balance, Th17, Tregs) — functional changes
+5. CD4+ T cell subsets (Th1/Th2, Th17, Tregs)
 6. CD8+ T cell exhaustion and cytotoxic impairment
 7. B cells, autoantibodies, and tertiary lymphoid structures
-8. Pro-inflammatory and immunosuppressive cytokines (IL-1beta, IL-6, TNF-alpha, IL-33, TGF-beta, IL-10)
-9. Chemokine networks (CCL2, CCL5/RANTES, CXCL12) and immune cell recruitment
-10. Immune checkpoint pathways (PD-1/PD-L1, CD47/SIRPa, CTLA-4, TIM-3) and IDO
-11. Estrogen and progesterone modulation of immune cell function
-12. Single-cell transcriptomics of immune populations in endometriosis
-13. Spatial transcriptomics and immune niche organization in lesions
-14. Immune dysfunction links to infertility, pain, and malignant transformation
+8. Pro-inflammatory and immunosuppressive cytokines
+9. Chemokine networks and immune cell recruitment
+10. Immune checkpoint pathways and IDO
+11. Estrogen and progesterone modulation of immune function
+12. Single-cell transcriptomics of immune populations
+13. Spatial transcriptomics and immune niche organization
+14. Links to infertility, pain, and malignant transformation
 ```
 
-## Step 3: Spawn Search Agents
+## 3. Search in parallel
 
-Read [references/search-agent-prompt.md](references/search-agent-prompt.md) for the full agent prompt template.
+Group the sub-questions into clusters of 2-3 related questions and give each cluster to one search agent (for 3-5 sub-questions, one agent each). Use at most 7 agents; about 5 suits most broad reviews. Launch them in one message so they run concurrently, using the Agent tool with `subagent_type: "general-purpose"` and the prompt in [references/search-agent-prompt.md](references/search-agent-prompt.md), filled in with the agent's questions, the broader topic, and the list of the other sub-questions.
 
-### Agent scaling
+Agents report findings paper by paper (citation, key finding with quantitative detail, relevance), their search log, gaps, and a breadth flag. They do not synthesize; that is your job.
 
-Group sub-questions into thematic clusters of 2-3 related questions each. Assign one agent per cluster.
+## 4. Refinement round (one, at most)
 
-| Sub-questions | Agents | Strategy |
-|--------------|--------|----------|
-| 3-5 | 1 per question | Direct assignment |
-| 6-10 | Group into 3-5 clusters of 2 | 1 agent per cluster |
-| 11-15 | Group into 5-7 clusters of 2-3 | 1 agent per cluster |
+Two mechanisms, run once each:
 
-Never spawn more than 7 agents. Target 5 for most broad reviews.
+- **Gap-driven follow-up.** From the agents' gaps and breadth flags, pick the 2-4 sub-topics that are clearly under-covered: a rich sub-literature an agent could only partly explore, an expected topic with zero results (it may need different search terms), or a recently emerged area missing from the decomposition. Send 1-3 follow-up agents with narrow questions and the same prompt. Skip this when coverage is good, when the gaps are genuine literature gaps rather than search gaps, or when the topic is narrow.
+- **Co-citation chaining (OpenAlex).** Catches foundational primary papers that every search query happened to miss. Collect all DOIs/PMIDs, run `references/cochain.py`, triage the ranked candidates to genuine primary research relevant to a sub-question (judge from title and abstract; OpenAlex's `type` field is unreliable), then have a search agent research each survivor to the same depth as any other finding before it enters the report. A chained paper that can't be explored to that depth is dropped, not inserted as a bare citation. Full protocol: [references/citation-chaining.md](references/citation-chaining.md).
 
-### Spawn agents in parallel
+Stop after this round; further rounds cost more than they find. Report remaining gaps in the Gaps section.
 
-Use the Agent tool with `subagent_type: "general-purpose"` for each agent. Each gets:
-- Their assigned question(s) from the decomposition
-- The broader topic context
-- The full prompt template from the reference file, with placeholders filled in
-- A list of the other sub-questions (for awareness, not their responsibility)
+## 5. Synthesize
 
-### What agents return
+You are an aggregator, not a compressor. Keep one report section per sub-question (or per closely related pair); merge sections only when their literatures genuinely overlap. Every finding an agent reported appears in the report unless another agent duplicated it or it failed verification.
 
-Each agent reports:
-- **Findings**: structured list (citation + key finding + relevance rating per paper)
-- **Search log**: exact queries used, databases searched, result counts
-- **Gaps**: what they searched for but couldn't find
-- **Breadth flag**: sub-topics encountered but not fully covered, or questions that proved too broad for adequate coverage
+Within each section, write a connected narrative: historical context, key discoveries, current understanding, open questions. Separate consensus findings, single-source findings, contradictions (give both sides), and negative results. Keep the quantitative detail from primary sources (sample sizes, effect sizes, p-values, the specific experiment): "3 of 6 ectopic samples showed mature TLS (n=18)", not "TLS were found in lesions". Cross-reference sections where a mechanism in one bears on another.
 
-Agents do NOT synthesize across papers. They report individual findings. Synthesis is the orchestrator's job.
+## 6. Verify citations
 
-## Step 4: Refinement Round
+Follow [references/verification-protocol.md](references/verification-protocol.md): confirm that the load-bearing citations exist and say what the review attributes to them, label each citation Verified, Plausible, or Unverified, and remove the Unverified ones. If WebFetch is unavailable, use the protocol's fallback and say in the Methods section that you did.
 
-After collecting all agent reports, assess coverage before synthesizing. Use two complementary mechanisms — (A) gap/breadth-driven follow-up searches, and (B) systematic co-citation chaining via OpenAlex (see below). Both feed a single bounded refinement round.
+## 7. Gaps
 
-### Review agent breadth flags and gaps
+A dedicated section. Consider six dimensions: temporal (old or sparse recent evidence), methodological, sample/model concentration, replication, translation, and unresolved contradictions. Label each gap as a **literature gap** (the field hasn't addressed it) or a **search limitation** (this search may have missed it).
 
-1. Read each agent's gaps and breadth flags
-2. Identify 2-4 sub-topics that were either:
-   - Flagged as "encountered but not covered" by an agent
-   - Entirely absent from all agent reports despite being expected
-   - Revealed as more complex than anticipated (agent found many papers but could only cover a fraction)
+## 8. Write the report
 
-### Decide whether to refine
+Write `{topic-slug}-literature-review.md` in the current directory, following [references/output-template.md](references/output-template.md): executive summary (3-5 cited takeaways), thematic sections, gaps and limitations, methods (search strategy, verification counts, chaining counts), and references with verification status. The report's length follows its coverage: every sub-question covered with its quantitative detail, and no filler sections or repeated summaries. Then give the user a short summary of the top findings, the largest gaps, and the verification results.
 
-**Spawn follow-up agents if:** there are clear coverage gaps that targeted searches would fill. Typical triggers:
-- An agent found a rich sub-literature it couldn't fully explore (e.g., "found 15+ papers on complement system but my question also covered chemokines — only covered chemokines")
-- A topic expected to have literature produced zero results — may need different search terms
-- A recently emerged sub-area was discovered that wasn't in the original decomposition
+Follow-up requests (deeper coverage of one theme, more verification) can be handled with targeted searches without re-running the workflow.
 
-**Skip refinement if:** agent reports collectively cover the decomposition well, gaps are genuine literature gaps (not search gaps), or the topic is narrow.
+## Tool notes
 
-### Execute refinement (gap-driven)
-
-Spawn 1-3 targeted follow-up agents with narrow, specific questions derived from the gap analysis. These agents follow the same prompt template but with focused questions.
-
-### Systematic co-citation chaining (OpenAlex)
-
-Gap/breadth analysis catches what the *agents* noticed they missed. Co-citation chaining catches what the *field* treats as foundational but every search query happened to skip — especially older primary papers and companion papers from authors you already cite. Run it every refinement round.
-
-Read [references/citation-chaining.md](references/citation-chaining.md) for the full protocol. In brief:
-
-1. **Collect** every DOI/PMID from the agent findings so far.
-2. **Chain** — run `references/cochain.py` to resolve them in OpenAlex and rank the papers they cite by co-citation degree (how many of your papers cite each candidate). No web searches; ~5 API calls.
-3. **Triage (LLM)** — from the ranked candidates, keep only genuine *primary* research relevant to a sub-question, and map each to its target section. Do **not** trust OpenAlex's `type` field for primary-vs-review — judge from title/abstract. Co-citation degree, not raw citation count, is the signal (raw counts surface famous general reviews).
-4. **Explore (mandatory)** — do **not** insert a chained paper as a bare citation. Route each surviving paper through a search agent (same `search-agent-prompt.md` rigor) to web-ground its actual findings with quantitative specifics, then verify it (Step 6). A chained paper that cannot be explored to that depth is dropped, not stubbed in.
-5. **Integrate** the explored findings into the relevant section during synthesis, exactly like any other finding.
-
-**One refinement round maximum.** Both mechanisms run once. Do not iterate further — diminishing returns and escalating token costs. If gaps remain after refinement, report them in the Gaps section.
-
-## Step 5: Synthesize
-
-### Preserve decomposition granularity
-
-The orchestrator is an **aggregator**, not a compressor. The decomposition separated topics for a reason — each sub-question targeted a distinct literature. Respect that structure:
-
-- **Default to one report section per sub-question** (or per closely related pair). If the decomposition separated CD4+ T cells, CD8+ T cells, and B cells into 3 questions, the report should have 3 sections — do not merge them into "Adaptive Immunity."
-- **Merge only when the literatures genuinely overlap** — e.g., if two questions produced the same papers with the same findings, combine them. But distinct cell types, distinct pathways, or distinct methodologies should remain separate.
-- **Every finding reported by a search agent should appear in the final report** unless it is duplicated by another agent's finding or fails verification. Do not drop findings to save space.
-
-### Thematic synthesis — narrative, not list
-
-Within each section, build a connected narrative (not organized by agent):
-
-1. Catalog all findings from all agents (initial + refinement) relevant to this section's topic
-2. For each section, identify:
-   - **Consensus findings**: supported by multiple independent sources
-   - **Novel/emerging findings**: single source but potentially high-impact
-   - **Contradictions**: sources that disagree — note both sides
-   - **Negative results**: studies that found no effect or couldn't replicate
-3. **Connect across sections**: where a mechanism in one section has implications for another, add a cross-reference (e.g., "The TGF-beta-mediated Treg expansion described above intersects with the NK cell suppression pathway discussed in the NK Cell Dysfunction section")
-
-### Synthesis quality rules
-
-The synthesis must read as a **connected narrative**, not an annotated bibliography:
-- Build progressive arguments: historical context → key discoveries → current understanding → open questions
-- Include **quantitative data** from primary sources: sample sizes, fold changes, p-values, AUC values, specific cell counts. Do not reduce "n=18, 3 of 6 ectopic samples showed mature TLS" to "TLS were found in lesions."
-- **Trace review-article claims to primary sources.** If an agent cited a comprehensive review for a specific experimental finding, search for and cite the original paper instead. The review can be cited for broad context, but specific results need primary citations.
-- Include negative and contrarian findings — these are often the most informative
-
-## Step 6: Verify Citations
-
-Read [references/verification-protocol.md](references/verification-protocol.md) for the full procedure.
-
-### Verification is mandatory, not best-effort
-
-Citation verification is a hard requirement. If verification tooling fails, **do not silently downgrade** — escalate visibly.
-
-**Verification method priority:**
-1. **WebFetch on DOI URL** (preferred — confirms paper exists, title/authors match)
-2. **WebSearch for exact title in quotes** (fallback — less granular but confirms existence)
-3. **bioRxiv MCP `get_preprint`** (for bioRxiv/medRxiv DOIs)
-
-**If WebFetch is denied or unavailable:**
-- Do NOT silently switch to title-only verification and call it done
-- **Immediately note the limitation** in your working state
-- Use WebSearch with exact quoted titles as the primary method instead
-- **Increase the number of citations checked via title search** to compensate — target 20-25 title-verified rather than 15-20 DOI-verified, since title search is less granular
-- For the 5-10 most critical citations, search for both the exact title AND the first author's name + key finding term to confirm content accuracy
-- **Flag the limitation prominently** in the Methods section: "WebFetch was unavailable; verification relied on title-based search. Citations marked 'Verified' were confirmed via exact-title match; citations marked 'Plausible' could not be independently confirmed."
-
-**Minimum verification threshold:** At least 50% of all citations must reach "Verified" status. If this threshold is not met, explicitly state this in the Methods section and identify which citations are lowest-confidence.
-
-### Triage approach
-- Identify the 15-20 most critical citations (those supporting key claims, surprising findings, or single-source claims)
-- Verify each via WebFetch on DOI URL or WebSearch for exact title
-- Assign confidence levels: **Verified** / **Plausible** / **Unverified**
-- Remove any citation that cannot reach at least "Plausible"
-- Content-check 5-10 load-bearing citations: read the abstract (via WebFetch or search result snippets) and confirm the attributed finding actually appears
-
-**Content accuracy checks must verify specifics**, not just that the paper is topically relevant:
-- Do the specific gene/protein/receptor names match what the paper reports?
-- Is the sample size reported for the correct experiment within the paper (not the overall cohort)?
-- Is the direction of effect correct (increased vs. decreased)?
-- Is the finding from the cited paper or from a different paper it cites?
-
-## Step 7: Identify Gaps
-
-This is a dedicated phase, not an afterthought. Analyze across six dimensions:
-
-1. **Temporal**: Is the field relying on older findings? Is recent work sparse?
-2. **Methodological**: Are certain approaches underrepresented relative to the question?
-3. **Sample/model**: Are studies concentrated in one model system, species, or demographic?
-4. **Replication**: Are key findings from single studies or independently replicated?
-5. **Translation**: Is there a disconnect between mechanistic findings and clinical relevance?
-6. **Contradictions**: Where do sources disagree? What might explain discrepancies?
-
-**Critical distinction**: For each gap, explicitly label it as a **literature gap** (the field hasn't addressed this) or a **search limitation** (our search may have missed this).
-
-## Step 8: Write Report
-
-Read [references/output-template.md](references/output-template.md) for the full template and quality examples.
-
-Write the report to `{topic-slug}-literature-review.md` in the current working directory.
-
-**Key sections:**
-1. Executive summary (3-5 declarative takeaways with citations)
-2. Thematic sections (Current Understanding → Key Findings → Open Questions)
-3. Gaps and Limitations (literature gaps + search limitations + confidence assessment)
-4. Methods (search strategy + verification status)
-5. References (alphabetical, each marked with verification status)
-
-After writing, present a brief summary to the user highlighting: the top findings, the most significant gaps, and the verification results.
-
-## Adapting to Scope
-
-| Aspect | Narrow query | Broad topic |
-|--------|-------------|-------------|
-| Landscape scan | 1-2 queries | 2-3 queries |
-| Decomposition | Auto, 3-5 questions | User-confirmed, 10-15 questions |
-| Agents | 2-3 | 5-7 |
-| Searches/agent | 5+ | 5-8 |
-| Refinement round | Skip unless clear gap | Yes, 1-3 follow-up agents |
-| Verification | All critical citations | Top 15-20 + 5-10 content checks |
-| Output length | 2,000-4,000 words | 5,000-10,000 words |
-| Gap analysis | Brief, 2-3 dimensions | Detailed, all 6 dimensions |
-
-## Notes
-
-- **bioRxiv MCP constraint**: `search_preprints` only filters by category and date range — it does NOT support keyword search. Use WebSearch as the primary discovery tool. Use bioRxiv MCP for browsing recent preprints in relevant categories and for verifying/enriching bioRxiv DOIs found via WebSearch.
-- **OpenAlex** (Step 4 chaining; optional Step 6 verification): free REST API, no key, ~100k calls/day (pass `mailto=` for the polite pool). It is a metadata + citation-graph index — excellent for enumerating references/citations and resolving DOIs/PMIDs, but its text search is literal keyword matching (weaker than WebSearch's semantic matching and PubMed's MeSH expansion), so it is **not** a substitute for WebSearch as the discovery tool.
-- **Paywalled content**: WebFetch gets landing pages and abstracts, not full text. Verify based on title/abstract metadata.
-- **Follow-up**: After delivering the report, the user may request deeper coverage of a specific theme, additional verification, or expansion of the gap analysis. These can be handled as targeted follow-up searches without re-running the full workflow.
+- **bioRxiv MCP:** `search_preprints` filters only by category and date range, not keyword. Use WebSearch for discovery; use the bioRxiv tools to browse recent preprints in relevant categories and to check or enrich bioRxiv DOIs.
+- **OpenAlex:** free, no key, about 100k calls/day (pass `mailto=`). Good for resolving identifiers and walking references; its text search is literal keyword matching, so it does not replace WebSearch for discovery.
+- **Paywalls:** WebFetch returns landing pages and abstracts, not full text. Verify against what it can see.
