@@ -1,7 +1,7 @@
 {
   "name": "cook-lab-analysis",
-  "description": "Cook Lab single-cell & spatial analysis toolkit: scRNA-seq/spatial methods (QC, clustering, annotation, integration, cross-modality transfer) and the lab analysis conventions + environment setup + project scaffolding. Skills: scrna-spatial, analysis-conventions. Figure style lives in the lab Branding repo. Opt-in; prescribes the lab analysis environment.",
-  "version": "0.2.0",
+  "description": "Cook Lab single-cell & spatial analysis: the lab's processing decisions and SpatialFeatureExperiment + Voyager stack (scrna-spatial), and the lab analysis standards, environment setup and project scaffolding (analysis-conventions). Figure style lives in the lab Branding repo. Opt-in; prescribes the lab analysis environment.",
+  "version": "0.3.0",
   "author": {
     "name": "David Cook",
     "email": "dpcook@ohri.ca"

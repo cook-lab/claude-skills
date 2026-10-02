@@ -38,8 +38,7 @@ Methods. Use this as the baseline:
    SpatialFeatureExperiment, Voyager, SingleR, UCell, …). `renv::init()` in the project, then
    `renv::snapshot()` to pin.
 4. **Optional scratch env:** to try experimental tools without disturbing `scverse`, make a throwaway
-   env — `mamba create -n claude_code python` — and activate it for those installs. (This is the
-   `claude_code` env the `scrna-spatial` skill refers to.)
+   env — `mamba create -n claude_code python` — and activate it for those installs.
 
 If a member is on HPC or a different setup, keep the *standard* (conda env + renv per project) and
 adapt the specifics — just record what you used in the project's `CLAUDE.md` Environment section.

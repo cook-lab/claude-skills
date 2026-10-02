@@ -4,17 +4,11 @@
     "name": "Cook Lab",
     "email": "dpcook@ohri.ca"
   },
-  "description": "Claude Code skills for the Cook Lab (OHRI) — project management and electronic lab notebook in the lab's Notion Teamspace.",
+  "description": "Claude Code skills for the Cook Lab (OHRI): literature reviews, project scaffolding, and single-cell and spatial analysis conventions.",
   "metadata": {
     "pluginRoot": "./plugins"
   },
   "plugins": [
-    {
-      "name": "cook-lab-notion",
-      "source": "cook-lab-notion",
-      "description": "Manage projects, tasks, and the electronic lab notebook in the Cook Lab Notion Teamspace. Bundles the Notion connection. You do the science; Claude writes the notebook.",
-      "version": "0.1.1"
-    },
     {
       "name": "cook-lab-research",
       "source": "cook-lab-research",
@@ -24,8 +18,8 @@
     {
       "name": "cook-lab-analysis",
       "source": "cook-lab-analysis",
-      "description": "Single-cell & spatial analysis toolkit: scRNA-seq/spatial methods and analysis conventions + environment setup (scrna-spatial, analysis-conventions). Opt-in; prescribes the lab analysis environment.",
-      "version": "0.2.0"
+      "description": "Single-cell & spatial analysis: the lab's processing decisions and SpatialFeatureExperiment + Voyager stack (scrna-spatial), and analysis standards, environment and project scaffolding (analysis-conventions). Opt-in; prescribes the lab analysis environment.",
+      "version": "0.3.0"
     }
   ]
 }
