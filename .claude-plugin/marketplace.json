@@ -24,8 +24,8 @@
     {
       "name": "cook-lab-analysis",
       "source": "cook-lab-analysis",
-      "description": "Single-cell & spatial analysis toolkit: scRNA-seq/spatial methods, lab figure style, and analysis conventions + environment setup (scrna-spatial, visualization, analysis-conventions). Opt-in; prescribes the lab analysis environment.",
-      "version": "0.1.0"
+      "description": "Single-cell & spatial analysis toolkit: scRNA-seq/spatial methods and analysis conventions + environment setup (scrna-spatial, analysis-conventions). Opt-in; prescribes the lab analysis environment.",
+      "version": "0.2.0"
     }
   ]
 }

@@ -7,7 +7,7 @@ description: >
   (skepticism, confounder-awareness, evidence rubric, analysis log format). Triggers: "set up a lab
   analysis project", "lab analysis conventions/standards", "set up the analysis environment",
   "scaffold an analysis project", "what are the lab analysis standards". Pairs with the
-  `scrna-spatial` and `visualization` skills in this plugin.
+  `scrna-spatial` skill in this plugin.
 ---
 
 # Cook Lab Analysis Conventions
@@ -68,12 +68,12 @@ When setting one up (often invoked via `project-init`):
   confounder checks.
 - **Update `ANALYSIS_LOG.md` after each discrete step** (script, decision, failed attempt,
   exploration) — not just at session end.
-- Use the companion skills: **`scrna-spatial`** for QC/clustering/annotation/integration and spatial
-  workflows, **`visualization`** for lab-style figures.
+- Use the companion skill **`scrna-spatial`** for QC/clustering/annotation/integration and spatial
+  workflows. Figures follow the lab design system in the Branding repo (github.com/cook-lab/Branding): `docs/design-system.md → Data visualization` and `→ Journal figures`, with palettes and ggplot2 scales in `tokens/palettes.R`.
 
 ## Companion skills
 - `scrna-spatial` — single-cell & spatial methods (this plugin)
-- `visualization` — lab figure style + palettes (this plugin)
+- Figures: the lab design system in the Branding repo (github.com/cook-lab/Branding): `docs/design-system.md → Data visualization` and `→ Journal figures`, with palettes and ggplot2 scales in `tokens/palettes.R`
 - `project-spec`, `project-init` — in the `cook-lab-research` plugin
 
 ## Note

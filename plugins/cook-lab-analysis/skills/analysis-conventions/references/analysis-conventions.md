@@ -4,7 +4,7 @@ You are working in a Cook Lab computational analysis project. Produce analyses t
 
 **Lab:** Ottawa Hospital Research Institute / University of Ottawa. Research focus: tumor microenvironment in ovarian cancer and endometriosis, using single-cell and spatial genomics.
 
-**Lab standards:** Encoded in the `scrna-spatial` and `visualization` skills (plus the full lab guides maintained internally by the PI).
+**Lab standards:** Encoded in the `scrna-spatial` skill and, for figures, in the lab design system in the Branding repo (github.com/cook-lab/Branding): `docs/design-system.md → Data visualization` and `→ Journal figures`, with palettes and ggplot2 scales in `tokens/palettes.R` (plus the full lab guides maintained internally by the PI).
 
 **System environments:**
 - Use the system R installation
@@ -74,7 +74,7 @@ If it fails these checks, downgrade the claim and propose the next discriminatin
 
 For detailed workflow and visualization standards, use the project-level skills:
 - **`scrna-spatial` skill** — scRNA-seq and spatial transcriptomics workflows, QC, clustering, annotation, interoperability
-- **`visualization` skill** — Lab theme, palettes (including cell-type palette), plot types, export dimensions, templates
+- **Figures** — the lab design system in the Branding repo (github.com/cook-lab/Branding): `docs/design-system.md → Data visualization` and `→ Journal figures`, with palettes and ggplot2 scales in `tokens/palettes.R`: chart types, palettes (including the cell-type palette), journal sizes and figure assembly
 
 Key principles:
 - Prefer top-to-bottom scripts with enough narrative that a labmate can rerun and understand "why"

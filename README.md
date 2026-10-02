@@ -81,8 +81,9 @@ Claude picks skills automatically based on what you ask.
 | Skill | For | Does |
 |-------|-----|------|
 | **scrna-spatial** | analysts | scRNA-seq & spatial methods: QC, doublets, normalization, clustering, annotation, integration, cross-modality transfer (Seurat/Scanpy/SFE). |
-| **visualization** | analysts | Publication-ready, lab-style figures (palettes, theme, plot types, export sizes). |
 | **analysis-conventions** | analysts | Lab analysis standards, the standard environment + setup, and full project scaffolding. |
+
+Figure style (chart types, palettes, journal sizes) lives in the lab Branding repo, [`cook-lab/Branding`](https://github.com/cook-lab/Branding), with ggplot2 scales in `tokens/palettes.R`.
 
 You don't need to memorize commands — just talk to Claude (*"create a task for…"*, *"log this run"*,
 *"do a lit review on…"*, *"set up this project"*, *"cluster these cells"*). If you ever want to invoke
@@ -143,14 +144,12 @@ plugins/cook-lab-research/
 plugins/cook-lab-analysis/
   .claude-plugin/plugin.json
   skills/scrna-spatial/SKILL.md          # + references/code_templates.md
-  skills/visualization/SKILL.md          # + references/visualization_style_guide.md (bundled)
   skills/analysis-conventions/SKILL.md   # + references/{analysis-conventions.md, environment.example.yml}
 ```
 
 **Bundled dependencies (keep in sync):** several skills ship snapshots of local files — re-copy them
 if you change the originals:
 - `cook-lab-research/project-spec` → `project_spec_template.md` (from `~/Projects/lab_guide/templates/`)
-- `cook-lab-analysis/visualization` → `visualization_style_guide.md` (from `~/Projects/lab_guide/guides/`)
 - `cook-lab-analysis/analysis-conventions` → `analysis-conventions.md` (snapshot of `~/Analysis/CLAUDE.md`, **lightly cleaned** — PI-machine path removed; re-clean if you re-copy) + a hand-written `environment.example.yml`
 
 `cook-lab-research/project-init` is intentionally **general** (no system assumptions). The
@@ -167,6 +166,6 @@ system-specific bits — lab environment, analysis conventions, full scaffolding
 - The collection IDs and the user roster in `lab-notebook/SKILL.md` are workspace-specific; update
   them here if the Teamspace or membership changes.
 
-**Adding more plugins later** (e.g. a `scrna-spatial`/`visualization` analysis plugin): add a folder
+**Adding more plugins later** (e.g. a new analysis plugin): add a folder
 under `plugins/` and a corresponding entry in `marketplace.json`. (Grant skills — `grant-writing`,
 `grant-review` — are intentionally kept local/private and are not in this repo.)
